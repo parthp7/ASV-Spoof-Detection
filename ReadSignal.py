@@ -14,5 +14,5 @@ if __name__ == '__main__':
     #Reading wav file, returns tuple with framerate and speech sample array
     (frame_rate, speech_signal) = wavreader.read('./DemoSounds/brian.wav')
     
-    print(frame_rate)
+    print("Frame rate: {0}\nTotal samples: {1}".format(frame_rate, len(speech_signal)))
     plt.plot(speech_signal)    
