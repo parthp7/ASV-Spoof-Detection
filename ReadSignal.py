@@ -63,14 +63,23 @@ def magnitude_spectrum(frames, NFFT):
 
 def power_spectrum(frames, NFFT):
     ''' Computes the power spectrum for each frame of windowed signal
-    
-    :param frames: array of frames, each row is a frame
-    :param NFFT: the FFT length to use. The execution time for fft depends 
+     NFFT is the FFT length to use. The execution time for fft depends 
      on the length of the transform. It is fastest for powers of two. 
      It is almost as fast for lengths that have only small prime factors.
     :returns: for NxD matrix, outputs Nx(NFFT/2 + 1). Each row is power spectrum for corresponding frame
     '''
     return 1.0/NFFT * np.square(magnitude_spectrum(frames, NFFT))
+
+
+def log_power_spectrum(frames, NFFT, normalized = True):
+    pow_spec = power_spectrum(frames, NFFT)
+    pow_spec[pow_spec<=1e-30] = 1e-30
+    
+    log_pow_spec = 10*np.log10(pow_spec)
+    if normalized:
+        return log_pow_spec - np.max(log_pow_spec)
+    else:
+        return log_pow_spec
 
 
 if __name__ == '__main__':
@@ -96,4 +105,8 @@ if __name__ == '__main__':
     window_len = 256
     windowed_signal = window_and_overlap(pre_emphasis, window_len, window_len/2)
     
+    pow_spec = power_spectrum(windowed_signal, 256)
+    energy = np.sum(pow_spec, 1)
     
+    plt.figure(3)
+    plt.plot(energy)
