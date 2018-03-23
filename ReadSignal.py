@@ -10,6 +10,7 @@ from scipy import signal
 import numpy as np
 import matplotlib.pyplot as plt
 import math
+import logging
 
 
 def pre_emphasis_filter(signal, filter_coeff=0.97):
@@ -48,6 +49,28 @@ def window_and_overlap(signal, frame_len, frame_step, winfunc=hamming_window):
     frames = rolling_window(padsig, frame_len, frame_step)
     
     return frames*window
+
+
+def magnitude_spectrum(frames, NFFT):
+    ''' Magnitude spectrum for each frame '''
+    
+    if np.shape(frames)[1] > NFFT:
+        logging.warn('frame length is greater than NFFT, increase NFFT.')
+    
+    complex_spectrum = np.fft.rfft(frames, NFFT)
+    return np.absolute(complex_spectrum)
+
+
+def power_spectrum(frames, NFFT):
+    ''' Computes the power spectrum for each frame of windowed signal
+    
+    :param frames: array of frames, each row is a frame
+    :param NFFT: the FFT length to use. The execution time for fft depends 
+     on the length of the transform. It is fastest for powers of two. 
+     It is almost as fast for lengths that have only small prime factors.
+    :returns: for NxD matrix, outputs Nx(NFFT/2 + 1). Each row is power spectrum for corresponding frame
+    '''
+    return 1.0/NFFT * np.square(magnitude_spectrum(frames, NFFT))
 
 
 if __name__ == '__main__':
