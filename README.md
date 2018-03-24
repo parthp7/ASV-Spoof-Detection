@@ -1,11 +1,8 @@
 # ASV-Spoof-Detection
-Spoofing detection system for automatic speaker verification
 
 This project is aimed at implementing a comprehensive spoofing detection system for automatic speaker verification based on research paper presented at ASVSPOOF2015 challenge [[1]].
 
-Abstract: 
-	
-	Anti-Spoofing System for automatic speaker verification
+Abstract:	Anti-Spoofing System for automatic speaker verification
 
 With the growth of interest in reliable ASV systems, the development of the spoofing techniques has increased tremendously.With the different spoofing methods present such as “Replay Attack”, “Cut and Paste”, “Handkerchief tampering”, “Nasalisation tampering”, etc. Despite the development of new spoofing detection methods, most of ASV spoofing countermeasures presented so far depend on a training dataset related to a specific type of attack, while the nature of the spoofing attack is usually unknown in real life. So as a countermeasure for this the paper discusses methods for correctly identifying spoofed speech data using combinations of different front-end acoustic features.
 	
