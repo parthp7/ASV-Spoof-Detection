@@ -14,24 +14,24 @@ import logging
 
 
 def pre_emphasis_filter(signal, filter_coeff=0.97):
-    ''' Returns list containing pre-emphasized signal using formula: y[i] = x[i] - a*x[i-1] '''
+    """ Returns list containing pre-emphasized signal using formula: y[i] = x[i] - a*x[i-1] """
     return np.append(signal[0],signal[1:]-filter_coeff*signal[:-1])
 
 
 def rolling_window(sig, window, step):
-    ''' Returns 2-D array from 1-D sig by appling 'window' and 'step' on sig '''
+    """ Returns 2-D array from 1-D sig by appling 'window' and 'step' on sig """
     shape = sig.shape[:-1] + (sig.shape[-1] - window + 1, window)
     strides = sig.strides + (sig.strides[-1],)
     return np.lib.stride_tricks.as_strided(sig, shape=shape, strides=strides)[::step]
 
 
 def hamming_window(length):
-    ''' Returns hamming window function with periodic window'''
+    """ Returns hamming window function with periodic window"""
     return signal.hamming(length, False)
 
 
 def window_and_overlap(signal, frame_len, frame_step, winfunc=hamming_window):
-    ''' Apply window function to divide signal into frames '''
+    """ Apply window function to divide signal into frames """
     slen = len(signal)
     frame_len = int(frame_len)
     frame_step = int(frame_step)
@@ -52,7 +52,7 @@ def window_and_overlap(signal, frame_len, frame_step, winfunc=hamming_window):
 
 
 def magnitude_spectrum(frames, NFFT):
-    ''' Magnitude spectrum for each frame '''
+    """ Magnitude spectrum for each frame """
     
     if np.shape(frames)[1] > NFFT:
         logging.warn('frame length is greater than NFFT, increase NFFT.')
@@ -62,12 +62,12 @@ def magnitude_spectrum(frames, NFFT):
 
 
 def power_spectrum(frames, NFFT):
-    ''' Computes the power spectrum for each frame of windowed signal
-     NFFT is the FFT length to use. The execution time for fft depends 
-     on the length of the transform. It is fastest for powers of two. 
-     It is almost as fast for lengths that have only small prime factors.
+    """ Computes the power spectrum for each frame of windowed signal
+        NFFT is the FFT length to use. The execution time for fft depends 
+        on the length of the transform. It is fastest for powers of two. 
+        It is almost as fast for lengths that have only small prime factors.
     :returns: for NxD matrix, outputs Nx(NFFT/2 + 1). Each row is power spectrum for corresponding frame
-    '''
+    """
     return 1.0/NFFT * np.square(magnitude_spectrum(frames, NFFT))
 
 

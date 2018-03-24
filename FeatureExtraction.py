@@ -14,7 +14,7 @@ from scipy.fftpack import dct
 
 
 def mfcc(signal, samplerate, winlen, winstep, numcep=12, nfft=256, nfilt=26, lowfreq=0, highfreq=None, appendEnergy=True):
-    ''' MFCC features of an audio signal '''
+    """ MFCC features of an audio signal """
     features, energy = mel_filterbank(signal, samplerate, winlen, winstep, nfft, nfilt, lowfreq, highfreq)
     features = np.log(features)
     features = dct(features, type=2, axis=1, norm='ortho')[:,:numcep]
@@ -24,7 +24,7 @@ def mfcc(signal, samplerate, winlen, winstep, numcep=12, nfft=256, nfilt=26, low
 
 
 def mel_filterbank(signal, samplerate, winlen, winstep, nfft=256, nfilt=26, lowfreq=0, highfreq=None):
-    ''' Computes Mel-filterbank energy features from audio signal '''
+    """ Computes Mel-filterbank energy features from audio signal """
     
     signal = sigproc.pre_emphasis_filter(signal)
     frames = sigproc.window_and_overlap(signal, winlen, winstep)
@@ -49,8 +49,8 @@ def mel2hz(mel):
 
 
 def get_filterbank(nfilt, nfft, samplerate, lowfreq=0, highfreq=None):
-    ''' Compute a Mel-filterbank. Filters are stored in rows, columns are fft bins.
-        Returns an array of size nfilt x (nfft/2 + 1) '''
+    """ Compute a Mel-filterbank. Filters are stored in rows, columns are fft bins.
+        Returns an array of size nfilt x (nfft/2 + 1) """
     
     highfreq = highfreq or samplerate/2
     assert highfreq <= samplerate/2, "highfreq is greater than samplerate/2"
