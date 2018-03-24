@@ -87,13 +87,36 @@ def lifter(cepstra, L=22):
         return cepstra
 
 
+
+def delta(feat, N=5):
+    """Compute delta features from a feature vector sequence. """
+    if N < 1:
+        raise ValueError('N must be an integer >= 1')
+    NUMFRAMES = len(feat)
+    denominator = 2 * sum([i**2 for i in range(1, N+1)])
+    delta_feat = np.empty_like(feat)
+    padded = np.pad(feat, ((N, N), (0, 0)), mode='edge')   # padded version of feat
+    for t in range(NUMFRAMES):
+        delta_feat[t] = np.dot(np.arange(-N, N+1), padded[t : t+2*N+1]) / denominator   # [t : t+2*N+1] == [(N+t)-N : (N+t)+N+1]
+    return delta_feat
+
 if __name__ == "__main__":
     
     # Reading wav file, returns tuple with sample rate and speech sample array
     (sample_rate, speech_signal) = wavreader.read('./DemoSounds/noisy-signal.wav')
     
     speech_signal = speech_signal[:10000]
-    
     print("Frame rate: {0}\nTotal samples: {1}".format(sample_rate, len(speech_signal)))
     
-    plt.plot(mfcc(speech_signal, sample_rate, 256, 128))
+    mfcc_data = mfcc(speech_signal, sample_rate, 256, 128)
+    print("Feature matrix shape: {}".format(np.shape(mfcc_data)))
+    
+    delta1 = delta(mfcc_data)
+    delta2 = delta(delta1)
+    
+    plt.figure(1)
+    plt.plot(mfcc_data)
+    plt.figure(2)
+    plt.plot(delta1)
+    plt.figure(3)
+    plt.plot(delta2)
