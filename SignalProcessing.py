@@ -81,7 +81,7 @@ def log_power_spectrum(frames, NFFT, normalized = True):
     else:
         return log_pow_spec
 
-
+"""
 if __name__ == '__main__':
     
     # Reading wav file, returns tuple with framerate and speech sample array
@@ -110,3 +110,4 @@ if __name__ == '__main__':
     
     plt.figure(3)
     plt.plot(energy)
+    """
