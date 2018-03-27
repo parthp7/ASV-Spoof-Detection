@@ -103,9 +103,9 @@ def delta(feat, N=5):
 if __name__ == "__main__":
     
     # Reading wav file, returns tuple with sample rate and speech sample array
-    (sample_rate, speech_signal) = wavreader.read('./DemoSounds/noisy-signal.wav')
-    
-    speech_signal = speech_signal[:10000]
+    (sample_rate, speech_signal) = wavreader.read('/media/parth/Entertainment/ASV2015/wav/D1/D1_1002598.wav')
+    print("Speech signal shape: {}".format(np.shape(speech_signal)))
+    #speech_signal = speech_signal[:10000]
     print("Frame rate: {0}\nTotal samples: {1}".format(sample_rate, len(speech_signal)))
     
     mfcc_data = mfcc(speech_signal, sample_rate, 256, 128)
