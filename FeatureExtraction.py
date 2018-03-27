@@ -27,7 +27,7 @@ def mel_filterbank(signal, samplerate, winlen, winstep, nfft=256, nfilt=26, lowf
     """ Computes Mel-filterbank energy features from audio signal """
     
     signal = sigproc.pre_emphasis_filter(signal)
-    frames = sigproc.window_and_overlap(signal, winlen, winstep)
+    frames = sigproc.window_and_overlap(signal, winlen*samplerate, winstep*samplerate)
     powspec = sigproc.power_spectrum(frames, nfft)
     energy = np.sum(powspec, 1)
     energy = np.where(energy==0, np.finfo(float).eps, energy)
@@ -105,14 +105,18 @@ if __name__ == "__main__":
     # Reading wav file, returns tuple with sample rate and speech sample array
     (sample_rate, speech_signal) = wavreader.read('/media/parth/Entertainment/ASV2015/wav/D1/D1_1002598.wav')
     print("Speech signal shape: {}".format(np.shape(speech_signal)))
-    #speech_signal = speech_signal[:10000]
+    speech_signal = speech_signal[:10000]
     print("Frame rate: {0}\nTotal samples: {1}".format(sample_rate, len(speech_signal)))
     
-    mfcc_data = mfcc(speech_signal, sample_rate, 256, 128)
+    mfcc_data = mfcc(speech_signal, sample_rate, 0.016, 0.008)
+    
     print("Feature matrix shape: {}".format(np.shape(mfcc_data)))
     
     delta1 = delta(mfcc_data)
     delta2 = delta(delta1)
+    
+    mfcc_data = np.append(mfcc_data, delta1, axis=1)
+    mfcc_data = np.append(mfcc_data, delta2, axis=1)
     
     plt.figure(1)
     plt.plot(mfcc_data)
