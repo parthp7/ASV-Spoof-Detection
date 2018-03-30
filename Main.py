@@ -9,6 +9,7 @@ Created on Tue Mar 27 19:38:49 2018
 import scipy.io.wavfile as wavreader
 import FeatureExtraction as feat
 import numpy as np
+import time
 
 DIR_PATH = "/media/parth/Entertainment/ASV2015/"
 
@@ -21,8 +22,8 @@ def file_read(filename):
         for line in file:
             if line == "": break
             record = line.split()
-            if record[0] == "T1" and record[3] == "human":
-                wav_files.append(record)
+            #if record[0] == "T1" and record[3] == "human":
+            wav_files.append(record)
     
     return wav_files
 
@@ -45,7 +46,8 @@ def feature_extraction_for_each(wav_files, feature="mfcc"):
 
 if __name__ == "__main__":
     
+    start_time = time.time()
     wav_files = file_read("CM_protocol/cm_train.trn")
-    
-    
-    
+    feature_extraction_for_each(wav_files)
+    end_time = time.time()
+    print(end_time-start_time)
