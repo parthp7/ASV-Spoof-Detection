@@ -87,7 +87,6 @@ def lifter(cepstra, L=22):
         return cepstra
 
 
-
 def delta(feat, N=5):
     """Compute delta features from a feature vector sequence. """
     if N < 1:
@@ -100,6 +99,7 @@ def delta(feat, N=5):
         delta_feat[t] = np.dot(np.arange(-N, N+1), padded[t : t+2*N+1]) / denominator   # [t : t+2*N+1] == [(N+t)-N : (N+t)+N+1]
     return delta_feat
 
+'''
 if __name__ == "__main__":
     
     # Reading wav file, returns tuple with sample rate and speech sample array
@@ -124,3 +124,4 @@ if __name__ == "__main__":
     plt.plot(delta1)
     plt.figure(3)
     plt.plot(delta2)
+'''
