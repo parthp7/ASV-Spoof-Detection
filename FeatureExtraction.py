@@ -14,30 +14,6 @@ from scipy.fftpack import dct
 from sklearn.decomposition import PCA
 
 
-def mfpc(signal, samplerate, winlen, winstep, numcep=12, nfft=256, nfilt=26, ndelta=2, lowfreq=0, highfreq=None, appendEnergy=True):
-    """ MFPC features of an audio signal """
-    features, energy = mel_filterbank(signal, samplerate, winlen, winstep, nfft, nfilt, lowfreq, highfreq)
-    features = np.log(features)
-    sklearn_pca = PCA(n_components=numcep)
-    features = sklearn_pca.fit_transform(features)
-    
-    to_derive = features
-    while (ndelta>0):
-        delta_feat = delta(to_derive)
-        features = np.append(features, delta_feat, axis=1)
-        to_derive = delta_feat
-        ndelta = ndelta-1
-    
-    return features, to_derive
-
-
-def mfpc_train(signal, samplerate, winlen, winstep, numcep=12, nfft=256, nfilt=26, ndelta=2, lowfreq=0, highfreq=None, appendEnergy=True):
-    """ Training eigen vectors on given data """
-    features, energy = mel_filterbank(signal, samplerate, winlen, winstep, nfft, nfilt, lowfreq, highfreq)
-    features = np.log(features)
-    
-
-
 def mfcc(signal, samplerate, winlen, winstep, numcep=12, nfft=256, nfilt=26, ndelta=2, lowfreq=0, highfreq=None, appendEnergy=True):
     """ MFCC features of an audio signal """
     features, energy = mel_filterbank(signal, samplerate, winlen, winstep, nfft, nfilt, lowfreq, highfreq)
@@ -53,7 +29,45 @@ def mfcc(signal, samplerate, winlen, winstep, numcep=12, nfft=256, nfilt=26, nde
         to_derive = delta_feat
         ndelta = ndelta-1
     
-    return features, to_derive
+    return features
+
+
+def mfpc(signal, samplerate, winlen, winstep, numcep=12, nfft=256, nfilt=26, ndelta=2, lowfreq=0, highfreq=None):
+    """ MFPC features of an audio signal """
+    features, energy = mel_filterbank(signal, samplerate, winlen, winstep, nfft, nfilt, lowfreq, highfreq)
+    features = np.log(features)
+    sklearn_pca = PCA(n_components=numcep)
+    features = sklearn_pca.fit_transform(features)
+    
+    to_derive = features
+    while (ndelta>0):
+        delta_feat = delta(to_derive)
+        features = np.append(features, delta_feat, axis=1)
+        to_derive = delta_feat
+        ndelta = ndelta-1
+    
+    return features
+
+
+def cosphasepc(signal, samplerate, winlen, winstep, numcep=12, nfft=256, nfilt=26, ndelta=2, lowfreq=0, highfreq=None, appendEnergy=True):
+    """ Computes Mel-frequency phase features by appling cosine function on unwrapped signal """
+    
+    signal = sigproc.pre_emphasis_filter(signal)
+    frames = sigproc.window_and_overlap(signal, winlen*samplerate, winstep*samplerate)
+    phase_spec = sigproc.phase_spectrum(frames, nfft)
+    
+    phase_spec = np.cos(phase_spec)
+    sklearn_pca = PCA(n_components=numcep)
+    features = sklearn_pca.fit_transform(phase_spec)
+    
+    to_derive = features
+    while (ndelta>0):
+        delta_feat = delta(to_derive)
+        features = np.append(features, delta_feat, axis=1)
+        to_derive = delta_feat
+        ndelta = ndelta-1
+        
+    return features
 
 
 def mel_filterbank(signal, samplerate, winlen, winstep, nfft=256, nfilt=26, lowfreq=0, highfreq=None):
@@ -136,21 +150,20 @@ def delta(feat, N=5):
 if __name__ == "__main__":
     
     # Reading wav file, returns tuple with sample rate and speech sample array
-    (sample_rate, speech_signal) = wavreader.read('/media/parth/Entertainment/ASV2015/wav/D1/D1_1002598.wav')
+    (sample_rate, speech_signal) = wavreader.read('/media/parth/Extension/ASV2015/wav/D1/D1_1002598.wav')
     print("Speech signal shape: {}".format(np.shape(speech_signal)))
     #speech_signal = speech_signal[:10000]
     print("Frame rate: {0}\nTotal samples: {1}".format(sample_rate, len(speech_signal)))
     
-    mfcc_data, delta1 = mfcc(speech_signal, sample_rate, 0.016, 0.008)
-    mfpc_data, delta2 = mfpc(speech_signal, sample_rate, 0.016, 0.008)
+    mfcc_data = mfcc(speech_signal, sample_rate, 0.016, 0.008)
+    mfpc_data = mfpc(speech_signal, sample_rate, 0.016, 0.008)
+    cppc_data = cosphasepc(speech_signal, sample_rate, 0.016, 0.008)
     
-    print("Feature matrix shape: MFCC:{}\tMFPC:{}".format(np.shape(mfcc_data), np.shape(mfpc_data)))
+    print("Feature matrix: MFCC:{}\tMFPC:{}\tCPPC:{}".format(np.shape(mfcc_data), np.shape(mfpc_data), np.shape(cppc_data)))
     
     plt.figure(1)
     plt.plot(mfcc_data)
     plt.figure(2)
     plt.plot(mfpc_data)
     plt.figure(3)
-    plt.plot(delta1)
-    plt.figure(4)
-    plt.plot(delta2)
+    plt.plot(cppc_data)

@@ -61,6 +61,15 @@ def magnitude_spectrum(frames, NFFT):
     return np.absolute(complex_spectrum)
 
 
+def phase_spectrum(frames, NFFT):
+    """ Phase spectrum for each frame """
+    if np.shape(frames)[1] > NFFT:
+        logging.warn('frame length is greater than NFFT, increase NFFT.')
+    
+    complex_spectrum = np.fft.rfft(frames, NFFT)
+    return np.unwrap(np.angle(complex_spectrum))
+
+
 def power_spectrum(frames, NFFT):
     """ Computes the power spectrum for each frame of windowed signal
         NFFT is the FFT length to use. The execution time for fft depends 

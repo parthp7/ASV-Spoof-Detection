@@ -34,14 +34,6 @@ def feature_extraction_for_each(wav_files, feature="mfcc"):
         (sample_rate, speech_signal) = wavreader.read("{}wav/{}/{}.wav".format(DIR_PATH, file[0], file[1]))
         
         feature_vector = feat.mfcc(speech_signal, sample_rate, 0.016, 0.008)
-        
-        derivative1 = feat.delta(feature_vector)
-        derivative2 = feat.delta(derivative1)
-        
-        feature_vector = np.append(feature_vector, derivative1, axis=1)
-        feature_vector = np.append(feature_vector, derivative2, axis=1)
-        
-    
 
 
 if __name__ == "__main__":
