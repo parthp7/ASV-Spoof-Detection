@@ -14,8 +14,8 @@ from scipy.fftpack import dct
 from sklearn.decomposition import PCA
 
 
-def mfcc(signal, samplerate, winlen, winstep, numcep=12, nfft=256, nfilt=26, ndelta=2, lowfreq=0, highfreq=None, appendEnergy=True):
-    """ MFCC features of an audio signal """
+def mfcc(signal, samplerate, winlen, winstep, numcep=12, nfft=512, nfilt=26, ndelta=2, lowfreq=0, highfreq=None, appendEnergy=True):
+    """ Mel-frequency cepstral coefficients of an audio signal """
     features, energy = mel_filterbank(signal, samplerate, winlen, winstep, nfft, nfilt, lowfreq, highfreq)
     features = np.log(features)
     features = dct(features, type=2, axis=1, norm='ortho')[:,:numcep]
@@ -32,8 +32,8 @@ def mfcc(signal, samplerate, winlen, winstep, numcep=12, nfft=256, nfilt=26, nde
     return features
 
 
-def mfpc(signal, samplerate, winlen, winstep, numcep=12, nfft=256, nfilt=26, ndelta=2, lowfreq=0, highfreq=None):
-    """ MFPC features of an audio signal """
+def mfpc(signal, samplerate, winlen, winstep, numcep=12, nfft=512, nfilt=26, ndelta=2, lowfreq=0, highfreq=None):
+    """ Mel-frequency principal coefficients of an audio signal """
     features, energy = mel_filterbank(signal, samplerate, winlen, winstep, nfft, nfilt, lowfreq, highfreq)
     features = np.log(features)
     sklearn_pca = PCA(n_components=numcep)
@@ -49,10 +49,18 @@ def mfpc(signal, samplerate, winlen, winstep, numcep=12, nfft=256, nfilt=26, nde
     return features
 
 
-def cosphasepc(signal, samplerate, winlen, winstep, numcep=12, nfft=256, nfilt=26, ndelta=2, lowfreq=0, highfreq=None, appendEnergy=True):
+def mwpc(signal, samplerate, winlen, winstep, numcep=12, nfft=512, nfilt=26, ndelta=2, lowfreq=0, highfreq=None):
+    """ Mel-Wavelet principal coefficients of an audio signal """
+    
+    #signal = siproc.pre_emphasis_filter(signal)
+    frames = sigproc.window_and_overlap(signal, winlen*samplerate, winstep*samplerate)
+    
+    
+
+def cosphasepc(signal, samplerate, winlen, winstep, numcep=12, nfft=512, nfilt=26, ndelta=2, lowfreq=0, highfreq=None, appendEnergy=True):
     """ Computes Mel-frequency phase features by appling cosine function on unwrapped signal """
     
-    signal = sigproc.pre_emphasis_filter(signal)
+    #signal = sigproc.pre_emphasis_filter(signal)
     frames = sigproc.window_and_overlap(signal, winlen*samplerate, winstep*samplerate)
     phase_spec = sigproc.phase_spectrum(frames, nfft)
     
@@ -70,7 +78,7 @@ def cosphasepc(signal, samplerate, winlen, winstep, numcep=12, nfft=256, nfilt=2
     return features
 
 
-def mel_filterbank(signal, samplerate, winlen, winstep, nfft=256, nfilt=26, lowfreq=0, highfreq=None):
+def mel_filterbank(signal, samplerate, winlen, winstep, nfft=512, nfilt=26, lowfreq=0, highfreq=None):
     """ Computes Mel-filterbank energy features from audio signal """
     
     signal = sigproc.pre_emphasis_filter(signal)
